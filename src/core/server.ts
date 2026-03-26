@@ -5,6 +5,16 @@ import { toMcpToolResult } from "../lib/response.js";
 import type { ToolRegistry } from "../registry/toolRegistry.js";
 import type { ToolAccessPolicy } from "../registry/types.js";
 
+function isFailureResponse(value: unknown): value is { ok: false; error: { code: string } } {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      "ok" in value &&
+      (value as { ok?: boolean }).ok === false &&
+      "error" in value
+  );
+}
+
 export function createServer(registry: ToolRegistry, policy?: ToolAccessPolicy): McpServer {
   const server = new McpServer(
     {
@@ -35,10 +45,13 @@ export function createServer(registry: ToolRegistry, policy?: ToolAccessPolicy):
           }
 
           const response = await tool.handler(args, extra);
+          const failure = isFailureResponse(response) ? response : undefined;
+
           logToolCall({
             toolName: tool.name,
             durationMs: Date.now() - startedAt,
-            success: true,
+            success: !failure,
+            errorCode: failure?.error.code,
             args: args as Record<string, unknown>
           });
 

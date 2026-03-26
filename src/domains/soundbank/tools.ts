@@ -14,16 +14,29 @@ export function getSoundbankTools(): ToolDefinition[] {
       tags: ["waapi", "soundbank", "generate", "stub"],
       examples: [{ title: "Generate banks for Windows", input: { soundbanks: ["Init"], platforms: ["Windows"] } }],
       inputSchema: {
-        soundbanks: z.array(z.string()).min(1),
-        platforms: z.array(z.string()).optional()
+        soundbanks: z.array(z.union([z.string(), z.object({ name: z.string().min(1) })])).optional(),
+        platforms: z.array(z.string()).optional(),
+        languages: z.array(z.string()).optional(),
+        skipLanguages: z.boolean().optional(),
+        rebuildSoundBanks: z.boolean().optional(),
+        clearAudioFileCache: z.boolean().optional(),
+        writeToDisk: z.boolean().optional(),
+        rebuildInitBank: z.boolean().optional(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
-          soundbanks: { type: "array", minItems: 1, items: { type: "string" } },
-          platforms: { type: "array", items: { type: "string" } }
+          soundbanks: { type: "array", items: { oneOf: [{ type: "string" }, { type: "object", properties: { name: { type: "string", minLength: 1 } }, required: ["name"], additionalProperties: true }] } },
+          platforms: { type: "array", items: { type: "string" } },
+          languages: { type: "array", items: { type: "string" } },
+          skipLanguages: { type: "boolean" },
+          rebuildSoundBanks: { type: "boolean" },
+          clearAudioFileCache: { type: "boolean" },
+          writeToDisk: { type: "boolean" },
+          rebuildInitBank: { type: "boolean" },
+          options: {}
         },
-        required: ["soundbanks"],
         additionalProperties: false
       }
     }),
@@ -37,12 +50,14 @@ export function getSoundbankTools(): ToolDefinition[] {
       tags: ["waapi", "soundbank", "query", "stub"],
       examples: [{ title: "Read bank inclusions", input: { soundbank: "Init" } }],
       inputSchema: {
-        soundbank: z.string().min(1)
+        soundbank: z.string().min(1),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
-          soundbank: { type: "string", minLength: 1 }
+          soundbank: { type: "string", minLength: 1 },
+          options: {}
         },
         required: ["soundbank"],
         additionalProperties: false

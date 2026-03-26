@@ -15,13 +15,21 @@ export function getAudioTools(): ToolDefinition[] {
       examples: [{ title: "Import one wav file", input: { imports: [{ audioFile: "C:/audio/footstep.wav", objectPath: "\\Actor-Mixer Hierarchy\\Default Work Unit\\Footsteps<Sound SFX>" }] } }],
       inputSchema: {
         imports: z.array(z.unknown()).min(1),
-        default: z.unknown().optional()
+        importOperation: z.string().optional(),
+        default: z.unknown().optional(),
+        autoAddToSourceControl: z.boolean().optional(),
+        autoCheckOutToSourceControl: z.boolean().optional(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
+          importOperation: { type: "string" },
           imports: { type: "array", minItems: 1, items: {} },
-          default: {}
+          default: {},
+          autoAddToSourceControl: { type: "boolean" },
+          autoCheckOutToSourceControl: { type: "boolean" },
+          options: {}
         },
         required: ["imports"],
         additionalProperties: false
@@ -37,12 +45,14 @@ export function getAudioTools(): ToolDefinition[] {
       tags: ["waapi", "audio", "mute", "stub"],
       examples: [{ title: "Mute selected objects", input: { objects: ["{GUID}"] } }],
       inputSchema: {
-        objects: z.array(z.string()).min(1)
+        objects: z.array(z.union([z.string(), z.number().int()])).min(1),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
-          objects: { type: "array", minItems: 1, items: { type: "string" } }
+          objects: { type: "array", minItems: 1, items: { oneOf: [{ type: "string" }, { type: "integer" }] } },
+          options: {}
         },
         required: ["objects"],
         additionalProperties: false
@@ -60,14 +70,16 @@ export function getAudioTools(): ToolDefinition[] {
       inputSchema: {
         audioSource: z.string().min(1),
         start: z.number().nonnegative(),
-        end: z.number().positive()
+        end: z.number().positive(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
           audioSource: { type: "string", minLength: 1 },
           start: { type: "number", minimum: 0 },
-          end: { type: "number", exclusiveMinimum: 0 }
+          end: { type: "number", exclusiveMinimum: 0 },
+          options: {}
         },
         required: ["audioSource", "start", "end"],
         additionalProperties: false

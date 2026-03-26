@@ -16,6 +16,7 @@ export function getObjectTools(): ToolDefinition[] {
       inputSchema: {
         waql: z.string().optional(),
         from: z.unknown().optional(),
+        transform: z.array(z.unknown()).optional(),
         options: z.unknown().optional()
       },
       inputSchemaJson: {
@@ -23,6 +24,7 @@ export function getObjectTools(): ToolDefinition[] {
         properties: {
           waql: { type: "string" },
           from: {},
+          transform: { type: "array", items: {} },
           options: {}
         },
         additionalProperties: false
@@ -40,14 +42,28 @@ export function getObjectTools(): ToolDefinition[] {
       inputSchema: {
         parent: z.string().min(1),
         type: z.string().min(1),
-        name: z.string().min(1)
+        name: z.string().min(1),
+        list: z.string().optional(),
+        onNameConflict: z.enum(["rename", "replace", "fail", "merge"]).optional(),
+        platform: z.string().optional(),
+        autoAddToSourceControl: z.boolean().optional(),
+        notes: z.string().optional(),
+        children: z.array(z.unknown()).optional(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
           parent: { type: "string", minLength: 1 },
           type: { type: "string", minLength: 1 },
-          name: { type: "string", minLength: 1 }
+          name: { type: "string", minLength: 1 },
+          list: { type: "string" },
+          onNameConflict: { type: "string", enum: ["rename", "replace", "fail", "merge"] },
+          platform: { type: "string" },
+          autoAddToSourceControl: { type: "boolean" },
+          notes: { type: "string" },
+          children: { type: "array", items: {} },
+          options: {}
         },
         required: ["parent", "type", "name"],
         additionalProperties: false
@@ -65,14 +81,18 @@ export function getObjectTools(): ToolDefinition[] {
       inputSchema: {
         object: z.string().min(1),
         property: z.string().min(1),
-        value: z.unknown()
+        value: z.unknown(),
+        platform: z.string().optional(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
           object: { type: "string", minLength: 1 },
           property: { type: "string", minLength: 1 },
-          value: {}
+          value: {},
+          platform: { type: "string" },
+          options: {}
         },
         required: ["object", "property", "value"],
         additionalProperties: false

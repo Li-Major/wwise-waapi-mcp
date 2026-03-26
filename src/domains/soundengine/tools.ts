@@ -15,17 +15,19 @@ export function getSoundengineTools(): ToolDefinition[] {
       examples: [{ title: "Post an event", input: { event: "Play_Footstep", gameObject: "Player" } }],
       inputSchema: {
         event: z.string().min(1),
-        gameObject: z.string().optional(),
-        playingId: z.number().int().optional()
+        gameObject: z.union([z.string(), z.number().int()]),
+        playingId: z.number().int().optional(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
           event: { type: "string", minLength: 1 },
-          gameObject: { type: "string" },
-          playingId: { type: "integer" }
+          gameObject: { oneOf: [{ type: "string" }, { type: "integer" }] },
+          playingId: { type: "integer" },
+          options: {}
         },
-        required: ["event"],
+        required: ["event", "gameObject"],
         additionalProperties: false
       }
     }),
@@ -41,14 +43,16 @@ export function getSoundengineTools(): ToolDefinition[] {
       inputSchema: {
         rtpc: z.string().min(1),
         value: z.number(),
-        gameObject: z.string().optional()
+        gameObject: z.union([z.string(), z.number().int()]).optional(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
           rtpc: { type: "string", minLength: 1 },
           value: { type: "number" },
-          gameObject: { type: "string" }
+          gameObject: { oneOf: [{ type: "string" }, { type: "integer" }] },
+          options: {}
         },
         required: ["rtpc", "value"],
         additionalProperties: false
@@ -65,13 +69,15 @@ export function getSoundengineTools(): ToolDefinition[] {
       examples: [{ title: "Register player object", input: { gameObject: "Player", gameObjectId: 1001 } }],
       inputSchema: {
         gameObject: z.string().min(1),
-        gameObjectId: z.number().int()
+        gameObjectId: z.number().int(),
+        options: z.unknown().optional()
       },
       inputSchemaJson: {
         type: "object",
         properties: {
           gameObject: { type: "string", minLength: 1 },
-          gameObjectId: { type: "integer" }
+          gameObjectId: { type: "integer" },
+          options: {}
         },
         required: ["gameObject", "gameObjectId"],
         additionalProperties: false

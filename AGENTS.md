@@ -16,7 +16,8 @@ Use this guide when modifying code, adding domains, or wiring new WAAPI tools.
 
 - `stdio` MCP transport is implemented.
 - Discovery tools are implemented in `src/domains/catalog/tools.ts`.
-- Representative WAAPI tools are registered as callable scaffolds and currently return structured `not_yet_implemented` failures until a live WAAPI transport is added.
+- A shared live WAAPI client abstraction is implemented in `src/lib/waapiClient.ts` using `waapi-client`.
+- Surfaced WAAPI tools are routed to real WAAPI RPC calls and return structured WAAPI failures when Wwise Authoring is unavailable.
 - WAAPI reference discovery is driven from file names and on-demand schema reads under `reference/WAAPI/`.
 
 ## Repository map
@@ -46,7 +47,7 @@ Use this guide when modifying code, adding domains, or wiring new WAAPI tools.
 
 1. Decide whether the tool is:
    - discovery-only
-   - callable scaffold
+   - runtime-backed callable tool
    - fully implemented runtime tool
 2. Put the tool in the correct domain file under `src/domains/<domain>/tools.ts`.
 3. Add or preserve these metadata fields:
@@ -76,13 +77,14 @@ Use this guide when modifying code, adding domains, or wiring new WAAPI tools.
 
 ## WAAPI integration guidance
 
-When wiring a scaffold to a real WAAPI backend:
+When adding or extending WAAPI-backed tools:
 
 - Keep transport concerns out of individual domain files when possible.
-- Introduce a focused client abstraction in `src/lib/` or a dedicated integration layer rather than duplicating connection logic across tools.
+- Reuse the focused client abstraction in `src/lib/waapiClient.ts` rather than duplicating connection logic across tools.
 - Reuse existing tool metadata and input schema instead of redefining interfaces in multiple places.
 - Fail with the standard envelope when the WAAPI backend is unavailable, disconnected, or returns invalid data.
 - Keep reference schema loading separate from execution logic.
+- Pass WAAPI procedure options through a top-level MCP `options` field when the underlying interface supports options.
 
 ## Validation and build workflow
 
@@ -97,7 +99,7 @@ Notes:
 
 - Built runtime entry is `dist/src/index.js`.
 - Config and reference assets are expected at repository root under `config/` and `reference/WAAPI/`.
-- The verify script starts the built stdio server and exercises discovery plus one WAAPI scaffold.
+- The verify script starts the built stdio server and exercises discovery plus one WAAPI-backed tool in failure-tolerant mode.
 
 ## Editing guidance
 
@@ -117,5 +119,5 @@ Notes:
 
 - Start from the catalog and registry structure before adding code.
 - Prefer implementing one domain increment at a time.
-- If asked to add many WAAPI tools, add discovery metadata broadly but execution support narrowly.
+- If asked to add many WAAPI tools, add discovery metadata broadly but runtime-backed execution narrowly.
 - Verify that changes still support the progressive-disclosure design.

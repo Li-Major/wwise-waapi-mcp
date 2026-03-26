@@ -78,7 +78,7 @@ async function main(): Promise<void> {
   });
   const parsedStub = parseStructuredContent(stubResult);
   assert.equal(parsedStub.ok, false);
-  assert.equal(parsedStub.error?.code, "not_yet_implemented");
+  assert(["waapi_unavailable", "waapi_call_failed"].includes(parsedStub.error?.code ?? ""));
 
   await transport.close();
   console.log("Verification passed.");
