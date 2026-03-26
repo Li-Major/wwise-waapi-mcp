@@ -51,6 +51,65 @@ export function getTransportTools(): ToolDefinition[] {
         required: ["transport", "action"],
         additionalProperties: false
       }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.transport.destroy",
+      title: "Destroy Transport",
+      description: "Destroy a transport object and free its resources.",
+      domain: "transport",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "transport"],
+      examples: [{ title: "Destroy a transport", input: { transport: 1 } }],
+      inputSchema: { transport: z.number().int() },
+      inputSchemaJson: { type: "object", properties: { transport: { type: "integer" }, options: {} }, required: ["transport"], additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.transport.getList",
+      title: "Get Transport List",
+      description: "Get the list of all active transport objects.",
+      domain: "transport",
+      risk: "low",
+      permissions: ["waapi:authoring:read"],
+      tags: ["waapi", "transport"],
+      examples: [{ title: "List all transports" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.transport.getState",
+      title: "Get Transport State",
+      description: "Get the current playback state of a transport object.",
+      domain: "transport",
+      risk: "low",
+      permissions: ["waapi:authoring:read"],
+      tags: ["waapi", "transport"],
+      examples: [{ title: "Get state of transport 1", input: { transport: 1 } }],
+      inputSchema: { transport: z.number().int() },
+      inputSchemaJson: { type: "object", properties: { transport: { type: "integer" }, options: {} }, required: ["transport"], additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.transport.prepare",
+      title: "Prepare Transport",
+      description: "Prepare an object for transport playback without starting it.",
+      domain: "transport",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "transport"],
+      examples: [{ title: "Prepare object for playback", input: { object: "{GUID}" } }],
+      inputSchema: { object: z.string().min(1) },
+      inputSchemaJson: { type: "object", properties: { object: { type: "string", minLength: 1 }, options: {} }, required: ["object"], additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.transport.useOriginals",
+      title: "Use Originals",
+      description: "Toggle whether transport playback uses original audio files instead of converted SoundBanks.",
+      domain: "transport",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "transport"],
+      examples: [{ title: "Enable original files", input: { enable: true } }],
+      inputSchema: { enable: z.boolean().optional() },
+      inputSchemaJson: { type: "object", properties: { enable: { type: "boolean" }, options: {} }, additionalProperties: false }
     })
   ];
 }

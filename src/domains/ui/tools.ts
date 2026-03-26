@@ -64,6 +64,62 @@ export function getUiTools(): ToolDefinition[] {
         required: ["path"],
         additionalProperties: false
       }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.ui.bringToForeground",
+      title: "Bring to Foreground",
+      description: "Bring the Wwise Authoring window to the foreground.",
+      domain: "ui",
+      risk: "low",
+      permissions: ["waapi:authoring:read"],
+      tags: ["waapi", "ui", "window"],
+      examples: [{ title: "Focus the Wwise window" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.ui.commands.getCommands",
+      title: "Get Commands",
+      description: "Get the list of registered custom commands in the Wwise UI.",
+      domain: "ui",
+      risk: "low",
+      permissions: ["waapi:authoring:read"],
+      tags: ["waapi", "ui", "commands"],
+      examples: [{ title: "List all registered commands" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.ui.commands.register",
+      title: "Register Commands",
+      description: "Register custom commands in the Wwise Authoring UI.",
+      domain: "ui",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "ui", "commands"],
+      examples: [{ title: "Register a custom command", input: { commands: [{ id: "MyPlugin.MyCommand", displayName: "Do Thing", program: "cmd.exe" }] } }],
+      inputSchema: { commands: z.array(z.unknown()).min(1) },
+      inputSchemaJson: {
+        type: "object",
+        properties: { commands: { type: "array", minItems: 1, items: {} }, options: {} },
+        required: ["commands"],
+        additionalProperties: false
+      }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.ui.commands.unregister",
+      title: "Unregister Commands",
+      description: "Unregister previously registered custom commands from the Wwise UI.",
+      domain: "ui",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "ui", "commands"],
+      examples: [{ title: "Unregister a command", input: { commands: ["MyPlugin.MyCommand"] } }],
+      inputSchema: { commands: z.array(z.string().min(1)).min(1) },
+      inputSchemaJson: {
+        type: "object",
+        properties: { commands: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } }, options: {} },
+        required: ["commands"],
+        additionalProperties: false
+      }
     })
   ];
 }

@@ -64,6 +64,75 @@ export function getDebugTools(): ToolDefinition[] {
         required: ["script"],
         additionalProperties: false
       }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.debug.enableAsserts",
+      title: "Enable Asserts",
+      description: "Enable or disable Wwise debug assertions.",
+      domain: "debug",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "debug"],
+      examples: [{ title: "Enable debug asserts", input: { enable: true } }],
+      inputSchema: { enable: z.boolean() },
+      inputSchemaJson: { type: "object", properties: { enable: { type: "boolean" }, options: {} }, required: ["enable"], additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.debug.enableAutomationMode",
+      title: "Enable Automation Mode",
+      description: "Enable or disable automation mode in Wwise (suppresses UI dialogs).",
+      domain: "debug",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "debug", "automation"],
+      examples: [{ title: "Enable automation mode", input: { enable: true } }],
+      inputSchema: { enable: z.boolean() },
+      inputSchemaJson: { type: "object", properties: { enable: { type: "boolean" }, options: {} }, required: ["enable"], additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.debug.generateToneWAV",
+      title: "Generate Tone WAV",
+      description: "Generate a WAV tone file for testing purposes.",
+      domain: "debug",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "debug", "audio"],
+      examples: [{ title: "Generate a 440 Hz sine wave", input: { path: "C:/temp/tone.wav", frequency: 440 } }],
+      inputSchema: {
+        path: z.string().min(1),
+        bitDepth: z.number().int().optional(),
+        sampleRate: z.number().int().optional(),
+        sustainTime: z.number().optional(),
+        sustainLevel: z.number().optional(),
+        attackTime: z.number().optional(),
+        releaseTime: z.number().optional(),
+        waveform: z.enum(["sine", "square", "triangle", "sawtooth", "whiteNoise", "pinkNoise"]).optional(),
+        frequency: z.number().optional()
+      },
+      inputSchemaJson: {
+        type: "object",
+        properties: {
+          path: { type: "string", minLength: 1 },
+          bitDepth: { type: "integer" }, sampleRate: { type: "integer" },
+          sustainTime: { type: "number" }, sustainLevel: { type: "number" },
+          attackTime: { type: "number" }, releaseTime: { type: "number" },
+          waveform: { type: "string", enum: ["sine", "square", "triangle", "sawtooth", "whiteNoise", "pinkNoise"] },
+          frequency: { type: "number" }, options: {}
+        },
+        required: ["path"],
+        additionalProperties: false
+      }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.debug.restartWaapiServers",
+      title: "Restart WAAPI Servers",
+      description: "Restart the WAAPI server endpoint inside Wwise Authoring.",
+      domain: "debug",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "debug"],
+      examples: [{ title: "Restart WAAPI servers" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
     })
   ];
 }

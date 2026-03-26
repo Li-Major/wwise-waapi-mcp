@@ -45,6 +45,28 @@ export function getRemoteTools(): ToolDefinition[] {
         properties: {},
         additionalProperties: false
       }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.remote.disconnect",
+      title: "Disconnect",
+      description: "Disconnect from the currently connected Wwise Sound Engine instance.",
+      domain: "remote",
+      risk: "medium",
+      permissions: ["waapi:remote"],
+      tags: ["waapi", "remote", "disconnect"],
+      examples: [{ title: "Disconnect from engine" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.remote.getConnectionStatus",
+      title: "Get Connection Status",
+      description: "Get the current connection status to the Wwise Sound Engine.",
+      domain: "remote",
+      risk: "low",
+      permissions: ["waapi:remote"],
+      tags: ["waapi", "remote", "status"],
+      examples: [{ title: "Check connection status" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
     })
   ];
 }

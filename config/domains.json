@@ -83,6 +83,48 @@
       "description": "Debug, CLI automation, logging, assertions, and Lua execution surfaces.",
       "risk": "high",
       "tags": ["debug", "cli", "automation"]
+    },
+    {
+      "name": "switchContainer",
+      "title": "Switch Container",
+      "description": "Switch Container child-to-state/switch assignment management.",
+      "risk": "medium",
+      "tags": ["authoring", "switch", "assignment"]
+    },
+    {
+      "name": "undo",
+      "title": "Undo",
+      "description": "Undo group management and redo operations for batched authoring changes.",
+      "risk": "high",
+      "tags": ["authoring", "undo", "redo"]
+    },
+    {
+      "name": "log",
+      "title": "Log",
+      "description": "Wwise log channel read, write, and clear operations.",
+      "risk": "low",
+      "tags": ["log", "diagnostics"]
+    },
+    {
+      "name": "plugin",
+      "title": "Plugin",
+      "description": "Wwise plug-in discovery and property schema inspection.",
+      "risk": "low",
+      "tags": ["plugin", "metadata", "discovery"]
+    },
+    {
+      "name": "sourceControl",
+      "title": "Source Control",
+      "description": "Source control file operations: add, check out, commit, revert, status, and provider configuration.",
+      "risk": "high",
+      "tags": ["vcs", "files", "sourceControl"]
+    },
+    {
+      "name": "sound",
+      "title": "Sound",
+      "description": "Sound object authoring operations such as active audio source selection.",
+      "risk": "high",
+      "tags": ["authoring", "sound", "source"]
     }
   ]
 }

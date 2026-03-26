@@ -89,6 +89,104 @@ export function getAudioTools(): ToolDefinition[] {
         required: ["audioSource", "start", "end"],
         additionalProperties: false
       }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.audio.resetMute",
+      title: "Reset Mute",
+      description: "Unmute all objects that were muted via WAAPI.",
+      domain: "audio",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "audio", "mute"],
+      examples: [{ title: "Reset all mutes" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.audio.resetSolo",
+      title: "Reset Solo",
+      description: "Unsolo all objects that were soloed via WAAPI.",
+      domain: "audio",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "audio", "solo"],
+      examples: [{ title: "Reset all solos" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.audio.solo",
+      title: "Solo Objects",
+      description: "Solo or unsolo one or more Wwise objects.",
+      domain: "audio",
+      risk: "medium",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "audio", "solo"],
+      examples: [{ title: "Solo a sound", input: { objects: ["{GUID}"], value: true } }],
+      inputSchema: { objects: z.array(z.string().min(1)).min(1), value: z.boolean() },
+      inputSchemaJson: {
+        type: "object",
+        properties: {
+          objects: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } },
+          value: { type: "boolean" }, options: {}
+        },
+        required: ["objects", "value"],
+        additionalProperties: false
+      }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.audio.importTabDelimited",
+      title: "Import Tab-Delimited",
+      description: "Import audio files using a tab-delimited import file.",
+      domain: "audio",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "audio", "import"],
+      examples: [{ title: "Import tab file", input: { importLanguage: "SFX", importOperation: "createNew", importFile: "C:/audio/batch.txt" } }],
+      inputSchema: {
+        importLanguage: z.string().min(1),
+        importOperation: z.enum(["createNew", "useExisting", "replaceExisting"]),
+        importFile: z.string().min(1),
+        importLocation: z.string().optional(),
+        autoAddToSourceControl: z.boolean().optional(),
+        autoCheckOutToSourceControl: z.boolean().optional()
+      },
+      inputSchemaJson: {
+        type: "object",
+        properties: {
+          importLanguage: { type: "string", minLength: 1 },
+          importOperation: { type: "string", enum: ["createNew", "useExisting", "replaceExisting"] },
+          importFile: { type: "string", minLength: 1 },
+          importLocation: { type: "string" },
+          autoAddToSourceControl: { type: "boolean" },
+          autoCheckOutToSourceControl: { type: "boolean" }, options: {}
+        },
+        required: ["importLanguage", "importOperation", "importFile"],
+        additionalProperties: false
+      }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.audioSourcePeaks.getMinMaxPeaksInTrimmedRegion",
+      title: "Get Min/Max Peaks in Trimmed Region",
+      description: "Get the min/max peak pairs within the trimmed active region of an audio source.",
+      domain: "audio",
+      risk: "low",
+      permissions: ["waapi:authoring:read"],
+      tags: ["waapi", "audio", "peaks", "waveform"],
+      examples: [{ title: "Sample 100 peaks in trim region", input: { object: "{GUID}", numPeaks: 100 } }],
+      inputSchema: {
+        object: z.string().min(1),
+        numPeaks: z.number().int().min(1),
+        getCrossChannelPeaks: z.boolean().optional()
+      },
+      inputSchemaJson: {
+        type: "object",
+        properties: {
+          object: { type: "string", minLength: 1 },
+          numPeaks: { type: "integer", minimum: 1 },
+          getCrossChannelPeaks: { type: "boolean" }, options: {}
+        },
+        required: ["object", "numPeaks"],
+        additionalProperties: false
+      }
     })
   ];
 }

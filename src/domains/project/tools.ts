@@ -63,6 +63,116 @@ export function getProjectTools(): ToolDefinition[] {
         },
         additionalProperties: false
       }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.console.project.close",
+      title: "Console: Close Project",
+      description: "Close the currently loaded project in the Wwise console (CLI).",
+      domain: "project",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "project", "console"],
+      examples: [{ title: "Close project from console" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.console.project.create",
+      title: "Console: Create Project",
+      description: "Create a new Wwise project via the console (CLI).",
+      domain: "project",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "project", "console"],
+      examples: [{ title: "Create a project", input: { path: "C:/Projects/MyGame/MyGame.wproj" } }],
+      inputSchema: {
+        path: z.string().min(1),
+        platforms: z.array(z.string()).optional(),
+        languages: z.array(z.string()).optional()
+      },
+      inputSchemaJson: {
+        type: "object",
+        properties: {
+          path: { type: "string", minLength: 1 },
+          platforms: { type: "array", items: { type: "string" } },
+          languages: { type: "array", items: { type: "string" } }, options: {}
+        },
+        required: ["path"],
+        additionalProperties: false
+      }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.ui.project.create",
+      title: "UI: Create Project",
+      description: "Create a new Wwise project via the Authoring UI.",
+      domain: "project",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "project", "ui"],
+      examples: [{ title: "Create project via UI", input: { path: "C:/Projects/MyGame/MyGame.wproj" } }],
+      inputSchema: {
+        path: z.string().min(1),
+        platforms: z.array(z.string()).optional(),
+        languages: z.array(z.string()).optional()
+      },
+      inputSchemaJson: {
+        type: "object",
+        properties: {
+          path: { type: "string", minLength: 1 },
+          platforms: { type: "array", items: { type: "string" } },
+          languages: { type: "array", items: { type: "string" } }, options: {}
+        },
+        required: ["path"],
+        additionalProperties: false
+      }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.ui.project.open",
+      title: "UI: Open Project",
+      description: "Open a Wwise project via the Authoring UI.",
+      domain: "project",
+      risk: "high",
+      permissions: ["waapi:authoring:write"],
+      tags: ["waapi", "project", "ui"],
+      examples: [{ title: "Open a project", input: { path: "C:/Projects/MyGame/MyGame.wproj" } }],
+      inputSchema: {
+        path: z.string().min(1),
+        onMigrationRequired: z.enum(["migrate", "fail"]).optional(),
+        bypassSave: z.boolean().optional(),
+        autoCheckOutToSourceControl: z.boolean().optional()
+      },
+      inputSchemaJson: {
+        type: "object",
+        properties: {
+          path: { type: "string", minLength: 1 },
+          onMigrationRequired: { type: "string", enum: ["migrate", "fail"] },
+          bypassSave: { type: "boolean" },
+          autoCheckOutToSourceControl: { type: "boolean" }, options: {}
+        },
+        required: ["path"],
+        additionalProperties: false
+      }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.getInfo",
+      title: "Get Info",
+      description: "Get general information about the running Wwise Authoring instance.",
+      domain: "project",
+      risk: "low",
+      permissions: ["waapi:authoring:read"],
+      tags: ["waapi", "project", "info"],
+      examples: [{ title: "Get Wwise version and platform info" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
+    }),
+    createWaapiStubTool({
+      name: "ak.wwise.core.getProjectInfo",
+      title: "Get Project Info",
+      description: "Get information about the currently loaded Wwise project.",
+      domain: "project",
+      risk: "low",
+      permissions: ["waapi:authoring:read"],
+      tags: ["waapi", "project", "info"],
+      examples: [{ title: "Get project name and path" }],
+      inputSchemaJson: { type: "object", properties: {}, additionalProperties: false }
     })
   ];
 }
