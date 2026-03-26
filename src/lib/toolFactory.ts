@@ -3,6 +3,7 @@ import { ok, standardResponseJsonSchema } from "./response.js";
 import { callWaapi } from "./waapiClient.js";
 import type { JsonSchema, ToolDefinition, ToolExample } from "../registry/types.js";
 
+/** 创建 WAAPI 工具时所需的输入描述信息。 */
 type StubToolInput = {
   name: string;
   title: string;
@@ -16,10 +17,15 @@ type StubToolInput = {
   inputSchemaJson?: JsonSchema;
 };
 
+/** WAAPI 调用时的参数类型，options 字段会单独提取并传入 WAAPI optionsSchema。 */
 type RpcArgs = Record<string, unknown> & {
   options?: unknown;
 };
 
+/**
+ * 在 Zod 属性规范中自动注入可选的 options 字段。
+ * 若传入的是原始 Zod 类型（透过 _zod 属性判定）则不作修改。
+ */
 function withOptionalOptionsSchema(inputSchema: ToolDefinition["inputSchema"]): ToolDefinition["inputSchema"] {
   if (!inputSchema || Array.isArray(inputSchema) || typeof inputSchema !== "object" || "_zod" in inputSchema) {
     return inputSchema;
@@ -33,6 +39,10 @@ function withOptionalOptionsSchema(inputSchema: ToolDefinition["inputSchema"]): 
   } as ToolDefinition["inputSchema"];
 }
 
+/**
+ * 在 JSON Schema 中自动注入可选的 options 字段。
+ * 若 inputSchemaJson 不存在或不是 object 类型，返回最小化的兼容 schema。
+ */
 function withOptionalOptionsJsonSchema(inputSchemaJson: JsonSchema | undefined): JsonSchema {
   if (!inputSchemaJson || inputSchemaJson.type !== "object") {
     return {
@@ -59,6 +69,11 @@ function withOptionalOptionsJsonSchema(inputSchemaJson: JsonSchema | undefined):
   };
 }
 
+/**
+ * 创建一个真实执行 WAAPI RPC 调用的 ToolDefinition。
+ * 处理器会自动从入参中分离 options 并传入 WAAPI optionsSchema。
+ * 返回值使用标准包：{ ok: true, data: { tool, domain, result } }。
+ */
 export function createWaapiTool(input: StubToolInput): ToolDefinition {
   return {
     ...input,
@@ -81,4 +96,5 @@ export function createWaapiTool(input: StubToolInput): ToolDefinition {
   };
 }
 
+/** createWaapiTool 的别名，保留以兼容旧引用。 */
 export const createWaapiStubTool = createWaapiTool;

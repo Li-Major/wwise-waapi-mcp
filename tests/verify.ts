@@ -3,10 +3,15 @@ import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
+/** callTool 返回值的最小结构类型。 */
 type ToolTextResult = {
   content: Array<{ type: string; text?: string }>;
 };
 
+/**
+ * 将 callTool 的返回值解析为标准 JSON 响应包。
+ * 兼容两种 SDK 版本的返回格式：content 直接返回和 toolResult 嵌套返回。
+ */
 function parseStructuredContent(result: { content?: Array<{ type: string; text?: string }>; toolResult?: unknown }) {
   const normalized = (result.content ? result : result.toolResult) as ToolTextResult | undefined;
 
@@ -23,6 +28,13 @@ function parseStructuredContent(result: { content?: Array<{ type: string; text?:
   return JSON.parse(textContent.text) as { ok: boolean; data?: unknown; error?: { code: string } };
 }
 
+/**
+ * 娱乐式端到端验证脚本：启动 stdio MCP 服务器，连接并执行以下检查：
+ * 1. 所有必要工具均已注册
+ * 2. catalog.listDomains 返回成功响应
+ * 3. catalog.getToolSchema 可返回工具 schema 详情
+ * 4. ak.soundengine.postEvent 在没有 Wwise 运行时返回正确的连接失败错误码
+ */
 async function main(): Promise<void> {
   const client = new Client({
     name: "wwise-mcp-verify",

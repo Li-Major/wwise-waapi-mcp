@@ -2,6 +2,10 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * Wwise Authoring UI 交互工具（ak.wwise.ui.*）。
+ * 支持读取和设置当前 UI 选中项，均需要 WAAPI 连接。
+ */
 export function getUiTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

@@ -2,6 +2,11 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * Wwise 授权工具中的对象操作工具（ak.wwise.core.object.*）。
+ * 支持查询、创建、修改和删除对象，
+ * 读取操作为中风险，写入操作为高风险。
+ */
 export function getObjectTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

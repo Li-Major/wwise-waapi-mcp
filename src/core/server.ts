@@ -5,6 +5,10 @@ import { toMcpToolResult } from "../lib/response.js";
 import type { ToolRegistry } from "../registry/toolRegistry.js";
 import type { ToolAccessPolicy } from "../registry/types.js";
 
+/**
+ * 判断一个值是否为失败响应包结构。
+ * 用于工具处理器返回响应包（而非抛出异常）时的业务层失败检测。
+ */
 function isFailureResponse(value: unknown): value is { ok: false; error: { code: string } } {
   return Boolean(
     value &&
@@ -15,6 +19,11 @@ function isFailureResponse(value: unknown): value is { ok: false; error: { code:
   );
 }
 
+/**
+ * 使用注册表中所有可调用的工具创建 MCP 服务器实例。
+ * 每个工具都被包装了统一的错误处理和日志记录逻辑。
+ * 错误和业务层失败均会序列化为标准 JSON 包并通过 MCP 文本内容返回。
+ */
 export function createServer(registry: ToolRegistry, policy?: ToolAccessPolicy): McpServer {
   const server = new McpServer(
     {

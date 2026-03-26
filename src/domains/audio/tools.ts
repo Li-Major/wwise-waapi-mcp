@@ -2,6 +2,11 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * 音频文件和采样展示工具（ak.wwise.core.audio.*）。
+ * 包括音频导入、映射模笓及静音控制，均需要 WAAPI 连接。
+ * 导入和静音操作为高风险，展示已导入音频的操作为中风险。
+ */
 export function getAudioTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

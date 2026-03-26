@@ -4,6 +4,13 @@ import { extractReferenceSummary, loadReferenceDocument } from "../../lib/refere
 import type { ToolRegistry } from "../../registry/toolRegistry.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * 返回进展式揭露工具列表。
+ * 这些工具不需要 WAAPI 连接，内部直接操作注册表和参考目录。
+ * - catalog.listDomains: 提供领域摘要
+ * - catalog.listTools: 提供指定领域下的工具列表
+ * - catalog.getToolSchema: 按需加载并返回单个工具的完整 schema 详情
+ */
 export function getCatalogTools(registry: ToolRegistry): ToolDefinition[] {
   return [
     {

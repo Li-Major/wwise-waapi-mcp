@@ -2,6 +2,11 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * 运行时音频引擎工具（ak.soundengine.*）。
+ * 这些工具直接操作游戏引擎中的音频对象、事件和 RTPC 值，
+ * 均为高风险操作且需要 WAAPI 连接。
+ */
 export function getSoundengineTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

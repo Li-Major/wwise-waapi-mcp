@@ -2,6 +2,10 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * Wwise 调试工具（ak.wwise.debug.*）。
+ * 支持读取 WAL 树结构和清除持久化内存，均需要 WAAPI 连接。
+ */
 export function getDebugTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

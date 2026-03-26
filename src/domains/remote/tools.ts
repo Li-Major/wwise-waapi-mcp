@@ -2,6 +2,10 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * 远程控制台连接工具（ak.wwise.core.remote.*）。
+ * 支持连接、断开和列出远程目标，均需要 WAAPI 连接。
+ */
 export function getRemoteTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

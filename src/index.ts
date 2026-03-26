@@ -22,11 +22,16 @@ type DomainsConfig = {
   domains: DomainMeta[];
 };
 
+/** 从 config/domains.json 加载领域元数据列表。 */
 function loadDomainsConfig(): DomainMeta[] {
   const document = JSON.parse(fs.readFileSync(getConfigPath("domains.json"), "utf8")) as DomainsConfig;
   return document.domains;
 }
 
+/**
+ * 服务器入口：加载配置和参考目录，创建并填充工具注册表，
+ * 根据环境变量应用访问控制策略，然后将 MCP 服务器连接到 stdio 传输层。
+ */
 export async function main(): Promise<void> {
   const registry = new ToolRegistry(loadDomainsConfig(), loadReferenceCatalog());
 

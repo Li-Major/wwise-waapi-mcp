@@ -2,6 +2,10 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * Wwise Authoring 中的传输控制工具（ak.wwise.core.transport.*）。
+ * 支持创建、操作和销毁传输对象，均需要 WAAPI 连接。
+ */
 export function getTransportTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

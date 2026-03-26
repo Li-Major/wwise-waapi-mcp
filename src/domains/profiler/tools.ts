@@ -2,6 +2,10 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * Wwise Profiler 数据访问工具（ak.wwise.core.profiler.*）。
+ * 支持读取 CPU 使用率、内存统计和活跃语音信息，均为低风险读取操作。
+ */
 export function getProfilerTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

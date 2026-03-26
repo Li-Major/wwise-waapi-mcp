@@ -2,6 +2,11 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * SoundBank 管理工具（ak.wwise.core.soundbank.*）。
+ * 支持生成、设置包含项和获取 SoundBank 信息，
+ * 均需要 WAAPI 连接，生成操作为高风险。
+ */
 export function getSoundbankTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({

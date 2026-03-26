@@ -2,6 +2,10 @@ import { z } from "zod/v4";
 import { ok, standardResponseJsonSchema } from "../../lib/response.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * 示例领域工具，用于演示如何添加新工具。
+ * 这些工具不调用 WAAPI，可在离线状态下正常运行。
+ */
 export function getExampleTools(): ToolDefinition[] {
   return [
     {

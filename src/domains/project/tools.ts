@@ -2,6 +2,10 @@ import { z } from "zod/v4";
 import { createWaapiStubTool } from "../../lib/toolFactory.js";
 import type { ToolDefinition } from "../../registry/types.js";
 
+/**
+ * Wwise 项目管理工具（ak.wwise.console.project.*）。
+ * 支持打开、关闭和保存项目，均为高风险操作且需要 WAAPI 连接。
+ */
 export function getProjectTools(): ToolDefinition[] {
   return [
     createWaapiStubTool({
