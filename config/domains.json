@@ -1,0 +1,88 @@
+{
+  "domains": [
+    {
+      "name": "catalog",
+      "title": "Catalog",
+      "description": "System discovery tools for progressive domain and schema disclosure.",
+      "risk": "low",
+      "tags": ["system", "discovery", "metadata"]
+    },
+    {
+      "name": "example",
+      "title": "Example",
+      "description": "Sample business domain showing how to add a non-WAAPI tool module.",
+      "risk": "low",
+      "tags": ["example", "sample"]
+    },
+    {
+      "name": "soundengine",
+      "title": "SoundEngine",
+      "description": "Runtime game-audio control for events, RTPCs, switches, listeners, and banks.",
+      "risk": "high",
+      "tags": ["runtime", "audio", "game"]
+    },
+    {
+      "name": "object",
+      "title": "Object",
+      "description": "Wwise authoring object queries, creation, property mutation, and hierarchy operations.",
+      "risk": "high",
+      "tags": ["authoring", "objects", "waql"]
+    },
+    {
+      "name": "audio",
+      "title": "Audio",
+      "description": "Audio import, solo or mute actions, and source peak analysis.",
+      "risk": "medium",
+      "tags": ["audio", "import", "analysis"]
+    },
+    {
+      "name": "soundbank",
+      "title": "SoundBank",
+      "description": "SoundBank generation, inclusion management, and external source conversion.",
+      "risk": "high",
+      "tags": ["build", "banks", "packaging"]
+    },
+    {
+      "name": "transport",
+      "title": "Transport",
+      "description": "Editor transport lifecycle and playback control.",
+      "risk": "medium",
+      "tags": ["transport", "playback"]
+    },
+    {
+      "name": "profiler",
+      "title": "Profiler",
+      "description": "Capture, performance telemetry, voice inspection, and profiler state.",
+      "risk": "medium",
+      "tags": ["profiling", "telemetry", "capture"]
+    },
+    {
+      "name": "project",
+      "title": "Project",
+      "description": "Project open, create, close, and save workflows across console, core, and UI APIs.",
+      "risk": "high",
+      "tags": ["project", "lifecycle"]
+    },
+    {
+      "name": "remote",
+      "title": "Remote",
+      "description": "Remote console discovery and connection management.",
+      "risk": "medium",
+      "tags": ["remote", "connection"]
+    },
+    {
+      "name": "ui",
+      "title": "UI",
+      "description": "Editor UI commands, selections, screenshots, and command registration.",
+      "risk": "medium",
+      "tags": ["ui", "editor"]
+    },
+    {
+      "name": "debug",
+      "title": "Debug",
+      "description": "Debug, CLI automation, logging, assertions, and Lua execution surfaces.",
+      "risk": "high",
+      "tags": ["debug", "cli", "automation"]
+    }
+  ]
+}

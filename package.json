@@ -1,0 +1,49 @@
+{
+  "name": "wwisemcp",
+  "version": "1.0.0",
+  "description": "Progressive-disclosure MCP server scaffold for Wwise WAAPI",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/src/index.js",
+    "verify": "tsx tests/verify.ts",
+    "package:exe": "npm run build && pkg package.json --targets node18-win-x64 --output bin/wwise-mcp.exe"
+  },
+  "keywords": [
+    "mcp",
+    "wwise",
+    "waapi",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bin": "dist/src/index.js",
+  "files": [
+    "dist/**/*",
+    "config/**/*",
+    "reference/**/*",
+    "README.md",
+    "docs/**/*"
+  ],
+  "pkg": {
+    "assets": [
+      "config/**/*.json",
+      "reference/**/*.json"
+    ],
+    "scripts": [
+      "dist/**/*.js"
+    ]
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "pkg": "^5.8.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
