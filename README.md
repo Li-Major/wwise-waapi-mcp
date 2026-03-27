@@ -2,17 +2,21 @@
 
 [中文文档](README_ZH.md)
 
-Lightweight Node.js + TypeScript MCP server for Wwise WAAPI, with progressive tool discovery.
+Lightweight Node.js + TypeScript MCP server for Wwise WAAPI. 
+
+⭐ Uses progressive tool discovery. Avoiding consuming large tokens by exposing the full WAAPI tool surface at once.
+
+⭐ Use locally installed Wwise's WAAPI Json Schema for full WAAPI capabilities.
 
 ## Quick start
 
-1. Install dependencies.
+### Install dependencies.
 
 ```bash
 npm i
 ```
 
-1. Configure the Wwise install root and WAAPI connection in `config/runtime.json`.
+### Configure the Wwise install root and WAAPI connection in `config/runtime.json`.
    
    If you leave the `wwiseRoot` configuration empty, or the path is invalid, the tool will use `%WWISEROOT%` to try finding the path.
    The `waapiUrl` defaults to `ws://127.0.0.1:8080/waapi` if not specified.
@@ -25,13 +29,13 @@ npm i
 }
 ```
 
-1. Run in development (stdio default).
+### Run in development (stdio default).
 
 ```bash
 npm run dev
 ```
 
-1. Or build and run.
+### Or build and run.
 
 ```bash
 npm run build

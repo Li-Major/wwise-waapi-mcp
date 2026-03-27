@@ -2,17 +2,21 @@
 
 [English Doc](README.md)
 
-一个轻量级的 Node.js + TypeScript Wwise WAAPI MCP 服务器，支持渐进式工具发现。
+一个轻量级的 Node.js + TypeScript Wwise WAAPI MCP 服务器
+
+⭐ 使用渐进式工具发现，避免同时给出大量 MCP 工具而消耗大量 Tokens
+
+⭐ 该工具依赖本地安装的 Wwise 中附带的 WAAPI Json Schema，因此可以提供完全的 WAAPI 能力。
 
 ## 快速开始
 
-1. 安装依赖。
+### 安装依赖。
 
 ```bash
 npm i
 ```
 
-1. 在 `config/runtime.json` 中配置 Wwise 安装根目录和 WAAPI 连接地址。
+### 在 `config/runtime.json` 中配置 Wwise 安装根目录和 WAAPI 连接地址。
 
    如果 `wwiseRoot` 配置留空，或路径无效，工具会尝试使用 `%WWISEROOT%` 查找路径。
    若未指定 `waapiUrl`，则默认使用 `ws://127.0.0.1:8080/waapi`。
@@ -25,13 +29,13 @@ npm i
 }
 ```
 
-1. 开发模式运行（默认 stdio）。
+### 开发模式运行（默认 stdio）。
 
 ```bash
 npm run dev
 ```
 
-1. 或者先构建再运行。
+### 或者先构建再运行。
 
 ```bash
 npm run build
