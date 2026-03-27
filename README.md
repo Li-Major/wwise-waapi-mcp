@@ -86,8 +86,6 @@ If all probes fail, startup exits with `waapi_schema_not_found`.
   - failure: `{ ok: false, error: { code, message, details? } }`
 - Structured tool call logs with sensitive-field redaction.
 
-Implemented WAAPI surface details are tracked in `docs/implemented-waapi.md`.
-
 ## Transport modes
 
 ### stdio mode (default)

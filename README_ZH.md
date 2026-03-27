@@ -86,8 +86,6 @@ npm start
   - 失败：`{ ok: false, error: { code, message, details? } }`
 - 结构化工具调用日志，并对敏感字段做脱敏处理。
 
-已实现的 WAAPI 接口覆盖详情见 `docs/implemented-waapi.md`。
-
 ## 传输模式
 
 ### stdio 模式（默认）
