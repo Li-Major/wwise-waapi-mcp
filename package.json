@@ -1,5 +1,5 @@
 {
-  "name": "wwisemcp",
+  "name": "wwise-waapi-mcp",
   "version": "1.0.0",
   "description": "Progressive-disclosure MCP server scaffold for Wwise WAAPI",
   "main": "dist/src/index.js",
@@ -24,6 +24,7 @@
     "dist/**/*",
     "config/**/*",
     "README.md",
+    "README_ZH.md",
     "docs/**/*"
   ],
   "pkg": {
