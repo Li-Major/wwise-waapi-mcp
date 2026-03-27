@@ -1,18 +1,12 @@
 import { connect, type Session } from "waapi-client";
 import { readFileSync } from "fs";
-import { join } from "path";
 import { AppError } from "./errors.js";
-
-/** 获取项目根目录路径 */
-function getProjectRoot(): string {
-  // Use process.cwd() which works reliably in both CommonJS and ESM
-  return process.cwd();
-}
+import { getConfigPath } from "./runtimePaths.js";
 
 /** 从 runtime.json 读取 WAAPI URL 配置 */
 function getWaapiUrl(): string {
   try {
-    const configPath = join(getProjectRoot(), "config", "runtime.json");
+    const configPath = getConfigPath("runtime.json");
     const config = JSON.parse(readFileSync(configPath, "utf-8"));
     return config.waapiUrl?.trim() || "ws://127.0.0.1:8080/waapi";
   } catch {
