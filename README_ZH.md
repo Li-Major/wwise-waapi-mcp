@@ -1,6 +1,6 @@
 # Wwise MCP 服务器
 
-[English Doc](README.MD)
+[English Doc](README.md)
 
 一个轻量级的 Node.js + TypeScript Wwise WAAPI MCP 服务器，支持渐进式工具发现。
 
@@ -12,14 +12,16 @@
 npm i
 ```
 
-1. 在 `config/runtime.json` 中配置 Wwise 安装根目录。
+1. 在 `config/runtime.json` 中配置 Wwise 安装根目录和 WAAPI 连接地址。
 
-   如果该配置留空，或路径无效，工具会尝试使用 `%WWISEROOT%` 查找路径。
+   如果 `wwiseRoot` 配置留空，或路径无效，工具会尝试使用 `%WWISEROOT%` 查找路径。
+   若未指定 `waapiUrl`，则默认使用 `ws://127.0.0.1:8080/waapi`。
 
 ```json
 // 示例
 {
-  "wwiseRoot": "C:/Program Files (x86)/Audiokinetic/Wwise 2024.1.0.8669"
+  "wwiseRoot": "C:/Program Files (x86)/Audiokinetic/Wwise 2024.1.0.8669",
+  "waapiUrl": "ws://127.0.0.1:8080/waapi"
 }
 ```
 
@@ -59,10 +61,18 @@ npm start
 ## 核心能力
 
 - 分层架构：`core` + `registry` + `domains` + `lib`。
-- 渐进式发现流程：
+- 渐进式对外暴露：
+  - MCP 的 `tools/list` 只暴露发现工具，不会一次性暴露所有运行时 WAAPI 工具
+  - 当前对外暴露的发现工具为：
+    - `catalog.listDomains`
+    - `catalog.listTools`
+    - `catalog.getToolSchema`
+    - `catalog.executeTool`
+- 渐进式发现与执行流程：
   - `catalog.listDomains`
   - `catalog.listTools`
   - `catalog.getToolSchema`
+  - `catalog.executeTool`
 - 覆盖主要领域的 WAAPI 运行时工具。
 - 统一响应封装：
   - 成功：`{ ok: true, data: ... }`
@@ -141,9 +151,12 @@ npm run verify
 
 验证脚本会检查：
 
-- discovery 工具是否已注册
-- 是否可以查询某个工具的 schema
-- WAAPI 不可用时，运行时 WAAPI 调用是否会结构化失败
+- MCP `tools/list` 是否只注册了发现工具
+- 是否可以通过 `catalog.listDomains` 枚举领域
+- 是否可以通过 `catalog.listTools` 发现领域下的工具
+- 是否可以通过 `catalog.getToolSchema` 查询某个工具的 schema
+- 是否可以通过 `catalog.executeTool` 执行某个运行时工具
+- WAAPI 不可用时，运行时 WAAPI 调用是否仍会结构化失败
 
 注意：执行 verify 前需要先确保 schema 路径解析成功。
 
@@ -155,10 +168,12 @@ npm run verify
 ws://127.0.0.1:8080/waapi
 ```
 
-可通过以下方式覆盖：
+在 `config/runtime.json` 中配置：
 
-```bash
-WWISE_WAAPI_URL=ws://host:port/waapi
+```json
+{
+  "waapiUrl": "ws://host:port/waapi"
+}
 ```
 
 ## 访问过滤
@@ -184,8 +199,11 @@ npm run package:exe
 1. `catalog.listDomains`
 2. `catalog.listTools`，参数 `{ "domain": "object", "includePlanned": true }`
 3. `catalog.getToolSchema`，参数 `{ "toolName": "ak.wwise.core.object.get" }`
+4. `catalog.executeTool`，参数 `{ "toolName": "ak.wwise.core.object.get", "arguments": { ... } }`
 
-这是预期的渐进式发现路径：领域摘要 -> 工具摘要 -> schema 详情。
+这是预期的渐进式发现路径：领域摘要 -> 工具摘要 -> schema 详情 -> 工具执行。
+
+这意味着 MCP 客户端在调用 `tools/list` 时，不会再直接拿到全部 callable WAAPI 工具，而是先发现领域和工具，再按需请求某个工具的 schema，最后通过统一入口 `catalog.executeTool` 执行该工具。
 
 ## 扩展新领域
 

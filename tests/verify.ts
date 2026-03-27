@@ -29,11 +29,12 @@ function parseStructuredContent(result: { content?: Array<{ type: string; text?:
 }
 
 /**
- * 娱乐式端到端验证脚本：启动 stdio MCP 服务器，连接并执行以下检查：
- * 1. 所有必要工具均已注册
- * 2. catalog.listDomains 返回成功响应
- * 3. catalog.getToolSchema 可返回工具 schema 详情
- * 4. ak.soundengine.postEvent 在没有 Wwise 运行时返回正确的连接失败错误码
+ * 端到端验证脚本：启动 stdio MCP 服务器，演示渐进式披露工作流程：
+ * 1. 连接并检查只有4个发现工具暴露到MCP
+ * 2. 调用 catalog.listDomains 获取所有域的摘要
+ * 3. 调用 catalog.listTools 找到特定域的工具
+ * 4. 调用 catalog.getToolSchema 获取工具的详细schema
+ * 5. 调用 catalog.executeTool 动态执行任何已注册的工具
  */
 async function main(): Promise<void> {
   const client = new Client({
@@ -57,21 +58,48 @@ async function main(): Promise<void> {
 
   await client.connect(transport);
 
+  // Step 1: Verify only discovery tools are exposed to MCP
   const toolsResult = await client.listTools();
   const toolNames = toolsResult.tools.map(tool => tool.name);
+  
+  console.log("\n=== Progressive Disclosure Verification ===");
+  console.log(`Step 1: MCP tools/list includes ${toolNames.length} discovery tools:`, toolNames);
 
+  assert.equal(toolNames.length, 4, "Should have exactly 4 discovery tools");
   assert(toolNames.includes("catalog.listDomains"));
   assert(toolNames.includes("catalog.listTools"));
   assert(toolNames.includes("catalog.getToolSchema"));
-  assert(toolNames.includes("ak.soundengine.postEvent"));
+  assert(toolNames.includes("catalog.executeTool"));
 
+  // Step 2: List all domains
+  console.log("\nStep 2: Call catalog.listDomains");
   const domainsResult = await client.callTool({
     name: "catalog.listDomains",
     arguments: {}
   });
   const parsedDomains = parseStructuredContent(domainsResult);
   assert.equal(parsedDomains.ok, true);
+  const domains = (parsedDomains.data as any)?.domains ?? [];
+  console.log(`  Found ${domains.length} domains`);
 
+  // Step 3: List tools in soundengine domain
+  console.log("\nStep 3: Call catalog.listTools for 'soundengine' domain");
+  const toolsListResult = await client.callTool({
+    name: "catalog.listTools",
+    arguments: {
+      domain: "soundengine",
+      includePlanned: false
+    }
+  });
+  const parsedToolsList = parseStructuredContent(toolsListResult);
+  assert.equal(parsedToolsList.ok, true);
+  const seTools = (parsedToolsList.data as any)?.tools ?? [];
+  const hasPostEvent = seTools.some((t: any) => t.name === "ak.soundengine.postEvent");
+  console.log(`  Found ${seTools.length} soundengine tools (including postEvent: ${hasPostEvent})`);
+  assert(hasPostEvent, "ak.soundengine.postEvent should be discoverable");
+
+  // Step 4: Get detailed schema
+  console.log("\nStep 4: Call catalog.getToolSchema for 'ak.soundengine.postEvent'");
   const schemaResult = await client.callTool({
     name: "catalog.getToolSchema",
     arguments: {
@@ -80,20 +108,27 @@ async function main(): Promise<void> {
   });
   const parsedSchema = parseStructuredContent(schemaResult);
   assert.equal(parsedSchema.ok, true);
+  console.log("  Schema retrieved successfully");
 
-  const stubResult = await client.callTool({
-    name: "ak.soundengine.postEvent",
+  // Step 5: Execute tool via catalog.executeTool
+  console.log("\nStep 5: Call catalog.executeTool to execute 'ak.soundengine.postEvent'");
+  const executeResult = await client.callTool({
+    name: "catalog.executeTool",
     arguments: {
-      event: "Play_Footstep",
-      gameObject: "Player"
+      toolName: "ak.soundengine.postEvent",
+      arguments: {
+        event: "Play_Footstep",
+        gameObject: "Player"
+      }
     }
   });
-  const parsedStub = parseStructuredContent(stubResult);
-  assert.equal(parsedStub.ok, false);
-  assert(["waapi_unavailable", "waapi_call_failed"].includes(parsedStub.error?.code ?? ""));
+  const parsedExecute = parseStructuredContent(executeResult);
+  assert.equal(parsedExecute.ok, false);
+  assert(["waapi_unavailable", "waapi_call_failed"].includes(parsedExecute.error?.code ?? ""));
+  console.log(`  Tool executed (expected failure due to no Wwise running): ${parsedExecute.error?.code}`);
 
   await transport.close();
-  console.log("Verification passed.");
+  console.log("\n✓ Verification passed - Progressive disclosure working correctly.\n");
 }
 
 void main().catch(error => {

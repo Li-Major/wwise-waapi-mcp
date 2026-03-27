@@ -42,6 +42,7 @@ export type ToolDefinition = {
   outputSchemaJson?: JsonSchema;
   referenceFile?: string;
   handler?: (args: unknown, extra: unknown) => Promise<unknown>;
+  isDiscoveryTool?: boolean;
 };
 
 /** 访问控制策略，允许按领域、风险等级或权限过滤可调用工具。 */

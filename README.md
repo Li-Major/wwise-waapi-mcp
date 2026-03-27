@@ -12,14 +12,16 @@ Lightweight Node.js + TypeScript MCP server for Wwise WAAPI, with progressive to
 npm i
 ```
 
-1. Configure the Wwise install root in `config/runtime.json`.
+1. Configure the Wwise install root and WAAPI connection in `config/runtime.json`.
    
-   If you leave this configuration empty, or the path is invalid, the tool will use `%WWISEROOT%` to try finding the path.
+   If you leave the `wwiseRoot` configuration empty, or the path is invalid, the tool will use `%WWISEROOT%` to try finding the path.
+   The `waapiUrl` defaults to `ws://127.0.0.1:8080/waapi` if not specified.
 
 ```json
 // Example
 {
-  "wwiseRoot": "C:/Program Files (x86)/Audiokinetic/Wwise 2024.1.0.8669"
+  "wwiseRoot": "C:/Program Files (x86)/Audiokinetic/Wwise 2024.1.0.8669",
+  "waapiUrl": "ws://127.0.0.1:8080/waapi"
 }
 ```
 
@@ -59,10 +61,18 @@ If all probes fail, startup exits with `waapi_schema_not_found`.
 ## Core capabilities
 
 - Layered architecture: `core` + `registry` + `domains` + `lib`.
-- Discovery flow:
+- Progressive-disclosure MCP surface:
+  - `tools/list` only exposes discovery tools, not every runtime WAAPI tool
+  - currently exposed discovery tools:
+    - `catalog.listDomains`
+    - `catalog.listTools`
+    - `catalog.getToolSchema`
+    - `catalog.executeTool`
+- Discovery and execution flow:
   - `catalog.listDomains`
   - `catalog.listTools`
   - `catalog.getToolSchema`
+  - `catalog.executeTool`
 - Runtime-backed WAAPI tools across major domains.
 - Standard response envelope:
   - success: `{ ok: true, data: ... }`
@@ -141,9 +151,12 @@ npm run verify
 
 Verification checks:
 
-- discovery tools are registered
-- one tool schema can be queried
-- one runtime WAAPI call fails in a structured way when WAAPI is unavailable
+- only discovery tools are registered through MCP `tools/list`
+- domains can be enumerated through `catalog.listDomains`
+- domain-local tools can be discovered through `catalog.listTools`
+- one tool schema can be queried through `catalog.getToolSchema`
+- one runtime WAAPI call can be executed through `catalog.executeTool`
+- WAAPI failure is still returned as a structured error when WAAPI is unavailable
 
 Note: verify requires schema path resolution to succeed first.
 
@@ -155,10 +168,12 @@ Default WAAPI URL:
 ws://127.0.0.1:8080/waapi
 ```
 
-Override with:
+Configure in `config/runtime.json`:
 
-```bash
-WWISE_WAAPI_URL=ws://host:port/waapi
+```json
+{
+  "waapiUrl": "ws://host:port/waapi"
+}
 ```
 
 ## Access filtering
@@ -184,8 +199,11 @@ After startup, call tools in this order:
 1. `catalog.listDomains`
 2. `catalog.listTools` with `{ "domain": "object", "includePlanned": true }`
 3. `catalog.getToolSchema` with `{ "toolName": "ak.wwise.core.object.get" }`
+4. `catalog.executeTool` with `{ "toolName": "ak.wwise.core.object.get", "arguments": { ... } }`
 
-This is the intended progressive-disclosure path: domain summary -> tool summary -> schema details.
+This is the intended progressive-disclosure path: domain summary -> tool summary -> schema details -> execution.
+
+The practical implication is that MCP clients no longer receive the full callable WAAPI surface during `tools/list`. They first discover available domains and tools, then request schema details for one tool, and only then execute that tool through the unified `catalog.executeTool` entrypoint.
 
 ## Extend with new domains
 

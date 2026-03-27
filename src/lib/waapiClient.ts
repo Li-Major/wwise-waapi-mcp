@@ -1,19 +1,31 @@
 import { connect, type Session } from "waapi-client";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { AppError } from "./errors.js";
 
-/** 如未通过环境变量 WWISE_WAAPI_URL 覆盖，将使用此默认地址连接 Wwise Authoring。 */
-const DEFAULT_WAAPI_URL = "ws://127.0.0.1:8080/waapi";
+/** 获取项目根目录路径 */
+function getProjectRoot(): string {
+  // Use process.cwd() which works reliably in both CommonJS and ESM
+  return process.cwd();
+}
+
+/** 从 runtime.json 读取 WAAPI URL 配置 */
+function getWaapiUrl(): string {
+  try {
+    const configPath = join(getProjectRoot(), "config", "runtime.json");
+    const config = JSON.parse(readFileSync(configPath, "utf-8"));
+    return config.waapiUrl?.trim() || "ws://127.0.0.1:8080/waapi";
+  } catch {
+    // 如果读取配置失败，使用默认值
+    return "ws://127.0.0.1:8080/waapi";
+  }
+}
 
 /** 应用内共享的单例 WAAPI 会话对象。 */
 let activeSession: Session | undefined;
 
 /** 连接过程中的 Promise，用于防止并发请求触发多次连接。 */
 let connectPromise: Promise<Session> | undefined;
-
-/** 从环境变量读取 WAAPI WebSocket 地址，未配置时回退至默认地址。 */
-function getWaapiUrl(): string {
-  return process.env.WWISE_WAAPI_URL?.trim() || DEFAULT_WAAPI_URL;
-}
 
 /**
  * 尝试与 WAAPI 服务器建立新会话。
