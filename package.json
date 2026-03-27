@@ -14,18 +14,21 @@
     "mcp",
     "wwise",
     "waapi",
+    "audio",
+    "game",
     "typescript"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "majorli",
+  "license": "MIT",
   "type": "commonjs",
-  "bin": "dist/src/index.js",
+  "bin": {
+    "wwise-waapi-mcp": "dist/src/index.js"
+  },
   "files": [
     "dist/**/*",
     "config/**/*",
     "README.md",
-    "README_ZH.md",
-    "docs/**/*"
+    "README_ZH.md"
   ],
   "pkg": {
     "assets": [
@@ -45,5 +48,9 @@
     "pkg": "^5.8.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Li-Major/wwise-waapi-mcp.git"
   }
 }
