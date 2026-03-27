@@ -23,14 +23,12 @@
   "files": [
     "dist/**/*",
     "config/**/*",
-    "reference/**/*",
     "README.md",
     "docs/**/*"
   ],
   "pkg": {
     "assets": [
-      "config/**/*.json",
-      "reference/**/*.json"
+      "config/**/*.json"
     ],
     "scripts": [
       "dist/**/*.js"

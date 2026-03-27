@@ -34,10 +34,10 @@ export function getSoundengineTools(): ToolDefinition[] {
       permissions: ["waapi:runtime"],
       tags: ["waapi", "runtime", "events"],
       examples: [{ title: "Post an event", input: { event: "Play_Footstep", gameObject: 1001 } }],
-      inputSchema: { event: seObj, gameObject: gameObj, playingId: z.number().int().optional() },
+      inputSchema: { event: seObj, gameObject: seObj, playingId: z.number().int().optional() },
       inputSchemaJson: {
         type: "object",
-        properties: { event: seObjJson, gameObject: { type: "number" }, playingId: { type: "integer" }, options: {} },
+        properties: { event: seObjJson, gameObject: seObjJson, playingId: { type: "integer" }, options: {} },
         required: ["event", "gameObject"],
         additionalProperties: false
       }

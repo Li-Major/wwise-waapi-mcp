@@ -22,8 +22,3 @@ export function getProjectRoot(): string {
 export function getConfigPath(...segments: string[]): string {
   return path.join(getProjectRoot(), "config", ...segments);
 }
-
-/** 返回 reference/WAAPI/ 目录下指定文件的绝对路径。 */
-export function getReferencePath(...segments: string[]): string {
-  return path.join(getProjectRoot(), "reference", "WAAPI", ...segments);
-}

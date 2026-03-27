@@ -25,39 +25,32 @@ This document tracks the WAAPI interfaces that are currently surfaced by the MCP
 
 ## Runtime-backed WAAPI tools
 
-| WAAPI Interface | Domain | Status |
+The runtime-backed surface has been expanded significantly and now includes `133` unique WAAPI interfaces.
+
+| Domain | Runtime-backed tool count | Status |
 | --- | --- | --- |
-| `ak.soundengine.postEvent` | soundengine | runtime-backed |
-| `ak.soundengine.setRTPCValue` | soundengine | runtime-backed |
-| `ak.soundengine.registerGameObj` | soundengine | runtime-backed |
-| `ak.wwise.core.object.get` | object | runtime-backed |
-| `ak.wwise.core.object.create` | object | runtime-backed |
-| `ak.wwise.core.object.setProperty` | object | runtime-backed |
-| `ak.wwise.core.audio.import` | audio | runtime-backed |
-| `ak.wwise.core.audio.mute` | audio | runtime-backed |
-| `ak.wwise.core.audioSourcePeaks.getMinMaxPeaksInRegion` | audio | runtime-backed |
-| `ak.wwise.core.soundbank.generate` | soundbank | runtime-backed |
-| `ak.wwise.core.soundbank.getInclusions` | soundbank | runtime-backed |
-| `ak.wwise.core.transport.create` | transport | runtime-backed |
-| `ak.wwise.core.transport.executeAction` | transport | runtime-backed |
-| `ak.wwise.core.profiler.getCpuUsage` | profiler | runtime-backed |
-| `ak.wwise.core.profiler.startCapture` | profiler | runtime-backed |
-| `ak.wwise.core.profiler.getVoices` | profiler | runtime-backed |
-| `ak.wwise.console.project.open` | project | runtime-backed |
-| `ak.wwise.core.project.save` | project | runtime-backed |
-| `ak.wwise.ui.project.close` | project | runtime-backed |
-| `ak.wwise.core.remote.connect` | remote | runtime-backed |
-| `ak.wwise.core.remote.getAvailableConsoles` | remote | runtime-backed |
-| `ak.wwise.ui.getSelectedObjects` | ui | runtime-backed |
-| `ak.wwise.ui.commands.execute` | ui | runtime-backed |
-| `ak.wwise.ui.captureScreen` | ui | runtime-backed |
-| `ak.wwise.debug.getWalTree` | debug | runtime-backed |
-| `ak.wwise.cli.generateSoundbank` | debug | runtime-backed |
-| `ak.wwise.core.executeLuaScript` | debug | runtime-backed |
+| `soundengine` | 26 | runtime-backed |
+| `object` | 21 | runtime-backed |
+| `audio` | 8 | runtime-backed |
+| `soundbank` | 5 | runtime-backed |
+| `transport` | 7 | runtime-backed |
+| `profiler` | 15 | runtime-backed |
+| `project` | 9 | runtime-backed |
+| `remote` | 4 | runtime-backed |
+| `ui` | 7 | runtime-backed |
+| `debug` | 7 | runtime-backed |
+| `switchContainer` | 3 | runtime-backed |
+| `undo` | 5 | runtime-backed |
+| `log` | 3 | runtime-backed |
+| `plugin` | 3 | runtime-backed |
+| `sourceControl` | 9 | runtime-backed |
+| `sound` | 1 | runtime-backed |
+
+For the exact interface list, check the domain modules under `src/domains/*/tools.ts`.
 
 ## Reference-only discovery scope
 
-At startup, the server also indexes all JSON definitions under `reference/WAAPI` and exposes them through the catalog tools as planned interfaces. This keeps the callable tool surface small while still enabling schema discovery for the wider WAAPI set.
+At startup, the server indexes WAAPI schema JSON from the resolved local Wwise installation path (`<WwiseRoot>/Authoring/Data/Schemas/WAAPI`) and exposes them through catalog tools as planned interfaces. This keeps the callable tool surface small while still enabling schema discovery for the wider WAAPI set.
 
 ## Notes for future expansion
 

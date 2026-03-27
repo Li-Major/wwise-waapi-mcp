@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { getReferencePath } from "./runtimePaths.js";
+
+let activeReferenceDir: string | undefined;
 
 /** reference/WAAPI/ 目录中单个 JSON 文件所对应的工具目录条目。 */
 export type ReferenceToolEntry = {
@@ -10,6 +11,11 @@ export type ReferenceToolEntry = {
   referenceFile: string;
   summary: string;
 };
+
+/** 设置当前进程使用的 WAAPI schema 目录。 */
+export function setReferenceDirectory(referenceDir: string): void {
+  activeReferenceDir = referenceDir;
+}
 
 /** 将字符串的首字母转大写。 */
 function sentenceCase(value: string): string {
@@ -58,6 +64,30 @@ function domainFromToolName(name: string): { domain: string; action: string } {
     return { domain: "profiler", action: name.slice("ak.wwise.core.profiler.".length) };
   }
 
+  if (name.startsWith("ak.wwise.core.switchContainer.")) {
+    return { domain: "switchContainer", action: name.slice("ak.wwise.core.switchContainer.".length) };
+  }
+
+  if (name.startsWith("ak.wwise.core.undo.")) {
+    return { domain: "undo", action: name.slice("ak.wwise.core.undo.".length) };
+  }
+
+  if (name.startsWith("ak.wwise.core.plugin.")) {
+    return { domain: "plugin", action: name.slice("ak.wwise.core.plugin.".length) };
+  }
+
+  if (name.startsWith("ak.wwise.core.sourceControl.")) {
+    return { domain: "sourceControl", action: name.slice("ak.wwise.core.sourceControl.".length) };
+  }
+
+  if (name.startsWith("ak.wwise.core.sound.")) {
+    return { domain: "sound", action: name.slice("ak.wwise.core.sound.".length) };
+  }
+
+  if (name === "ak.wwise.core.getInfo" || name === "ak.wwise.core.getProjectInfo") {
+    return { domain: "project", action: name.slice("ak.wwise.core.".length) };
+  }
+
   if (name.startsWith("ak.wwise.console.project.")) {
     return { domain: "project", action: name.slice("ak.wwise.console.project.".length) };
   }
@@ -91,7 +121,7 @@ function domainFromToolName(name: string): { domain: string; action: string } {
   }
 
   if (name.startsWith("ak.wwise.core.log.")) {
-    return { domain: "debug", action: name.slice("ak.wwise.core.log.".length) };
+    return { domain: "log", action: name.slice("ak.wwise.core.log.".length) };
   }
 
   if (name.startsWith("ak.wwise.waapi.")) {
@@ -108,11 +138,16 @@ function summarizeAction(action: string): string {
 }
 
 /**
- * 扫描 reference/WAAPI/ 目录下所有 JSON 文件，构建工具名 → 目录条目的映射表。
+ * 扫描 WAAPI schema 目录下所有 JSON 文件，构建工具名 → 目录条目的映射表。
  * 此过程不解析文件内容，仅根据文件名推断元数据，确保启动消耗最小。
  */
-export function loadReferenceCatalog(): Map<string, ReferenceToolEntry> {
-  const referenceDir = getReferencePath();
+export function loadReferenceCatalog(referenceDir: string): Map<string, ReferenceToolEntry> {
+  setReferenceDirectory(referenceDir);
+
+  if (!fs.existsSync(referenceDir)) {
+    return new Map<string, ReferenceToolEntry>();
+  }
+
   const files = fs.readdirSync(referenceDir);
   const catalog = new Map<string, ReferenceToolEntry>();
 
@@ -141,7 +176,11 @@ export function loadReferenceCatalog(): Map<string, ReferenceToolEntry> {
  * 若文件不存在则返回 undefined，调用方应处理该情况。
  */
 export function loadReferenceDocument(toolName: string): Record<string, unknown> | undefined {
-  const filePath = getReferencePath(`${toolName}.json`);
+  if (!activeReferenceDir) {
+    return undefined;
+  }
+
+  const filePath = path.join(activeReferenceDir, `${toolName}.json`);
 
   if (!fs.existsSync(filePath)) {
     return undefined;

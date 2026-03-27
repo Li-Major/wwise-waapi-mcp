@@ -1,100 +1,173 @@
 # Wwise MCP Server
 
-Lightweight Node.js and TypeScript MCP server scaffold for Wwise WAAPI with progressive tool discovery.
+[中文文档](README_ZH.md)
 
-## What is implemented
+Lightweight Node.js + TypeScript MCP server for Wwise WAAPI, with progressive tool discovery.
 
-- `stdio` transport via the official MCP TypeScript SDK.
-- Layered architecture: `core` + `registry` + `domains` + `lib`.
-- Top-level discovery tools:
-  - `catalog.listDomains`
-  - `catalog.listTools`
-  - `catalog.getToolSchema`
-- Representative WAAPI tool scaffolds across major domains.
-- Live WAAPI RPC integration for the currently surfaced WAAPI tools.
-- Uniform structured responses:
-  - success: `{ ok: true, data: ... }`
-  - failure: `{ ok: false, error: { code, message, details? } }`
-- Minimal tool-call logging with sensitive field redaction.
-- Verification script using an MCP client over stdio.
+## Quick start
 
-## Current runtime-backed WAAPI tools
-
-The currently exposed WAAPI procedures are grouped across these domains:
-
-- `soundengine`: `postEvent`, `setRTPCValue`, `registerGameObj`
-- `object`: `get`, `create`, `setProperty`
-- `audio`: `import`, `mute`, `audioSourcePeaks.getMinMaxPeaksInRegion`
-- `soundbank`: `generate`, `getInclusions`
-- `transport`: `create`, `executeAction`
-- `profiler`: `getCpuUsage`, `startCapture`, `getVoices`
-- `project`: `console.project.open`, `core.project.save`, `ui.project.close`
-- `remote`: `connect`, `getAvailableConsoles`
-- `ui`: `getSelectedObjects`, `commands.execute`, `captureScreen`
-- `debug`: `getWalTree`, `cli.generateSoundbank`, `core.executeLuaScript`
-
-The complete tracked list is in `docs/implemented-waapi.md`.
-
-## Install
+1. Install dependencies.
 
 ```bash
 npm i
 ```
 
-## Build
+1. Configure the Wwise install root in `config/runtime.json`.
+   
+   If you leave this configuration empty, or the path is invalid, the tool will use `%WWISEROOT%` to try finding the path.
 
-```bash
-npm run build
+```json
+// Example
+{
+  "wwiseRoot": "C:/Program Files (x86)/Audiokinetic/Wwise 2024.1.0.8669"
+}
 ```
 
-## Run
-
-Development:
+1. Run in development (stdio default).
 
 ```bash
 npm run dev
 ```
 
-Built server:
+1. Or build and run.
 
 ```bash
+npm run build
 npm start
 ```
 
-## Verify
+## Schema source and startup requirements
 
-Run the verification script after building:
+This project does not redistribute Audiokinetic WAAPI schema JSON files.
+
+At startup, the server resolves WAAPI schema directory using this priority:
+
+1. `config/runtime.json` -> `wwiseRoot`
+2. `WWISEROOT` environment variable
+3. Live WAAPI probe:
+   - call `ak.wwise.core.getProjectInfo` to confirm a project is open
+   - call `ak.wwise.core.getInfo` and read `directories.install`
+
+Expected schema path under root:
+
+```text
+<WwiseRoot>/Authoring/Data/Schemas/WAAPI
+```
+
+If all probes fail, startup exits with `waapi_schema_not_found`.
+
+## Core capabilities
+
+- Layered architecture: `core` + `registry` + `domains` + `lib`.
+- Discovery flow:
+  - `catalog.listDomains`
+  - `catalog.listTools`
+  - `catalog.getToolSchema`
+- Runtime-backed WAAPI tools across major domains.
+- Standard response envelope:
+  - success: `{ ok: true, data: ... }`
+  - failure: `{ ok: false, error: { code, message, details? } }`
+- Structured tool call logs with sensitive-field redaction.
+
+Implemented WAAPI surface details are tracked in `docs/implemented-waapi.md`.
+
+## Transport modes
+
+### stdio mode (default)
+
+Use for standard MCP clients that spawn the server as a subprocess.
+
+```bash
+npm run dev
+```
+
+```bash
+npm start
+# equivalent to: node dist/src/index.js
+```
+
+Example MCP client config:
+
+```json
+{
+  "servers": {
+    "wwise-mcp": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["dist/src/index.js"]
+    }
+  }
+}
+```
+
+### HTTP/SSE mode
+
+Use when you want a long-running MCP endpoint over HTTP.
+
+```bash
+node dist/src/index.js --http
+```
+
+```bash
+node dist/src/index.js --http --port 8080
+```
+
+```bash
+MCP_TRANSPORT=http PORT=8080 node dist/src/index.js
+```
+
+HTTP endpoint summary:
+
+| Method | Path | Purpose |
+| :-- | :-- | :-- |
+| `POST` | `/mcp` | Send JSON-RPC requests. Omit `mcp-session-id` on first `initialize` to create session. |
+| `GET` | `/mcp` | Open standalone SSE stream for server notifications. Requires `mcp-session-id`. |
+| `DELETE` | `/mcp` | Close session. Requires `mcp-session-id`. |
+
+Port selection priority:
+
+1. `--port <n>`
+2. `PORT` env var
+3. default `3000`
+
+The HTTP server binds to `127.0.0.1` by default.
+
+## Verify
 
 ```bash
 npm run build
 npm run verify
 ```
 
-The script will:
+Verification checks:
 
-- start the MCP server over stdio
-- confirm discovery tools are registered
-- inspect one surfaced WAAPI tool schema
-- call one live WAAPI-backed tool and confirm it fails cleanly with a structured WAAPI connectivity or call error when no Wwise Authoring instance is available
+- discovery tools are registered
+- one tool schema can be queried
+- one runtime WAAPI call fails in a structured way when WAAPI is unavailable
 
-## Manual validation
+Note: verify requires schema path resolution to succeed first.
 
-If you want to inspect the server from another MCP client or IDE:
+## WAAPI connection
 
-1. Build the project.
-2. Launch the server with `npm start`.
-3. Call these tools in order:
-   - `catalog.listDomains`
-   - `catalog.listTools` with `{ "domain": "object", "includePlanned": true }`
-   - `catalog.getToolSchema` with `{ "toolName": "ak.wwise.core.object.get" }`
+Default WAAPI URL:
 
-This is the intended progressive-disclosure path: domain summary -> tool summary -> schema details.
+```bash
+ws://127.0.0.1:8080/waapi
+```
 
-If a local Wwise Authoring instance is running with WAAPI enabled, you can then call one of the surfaced runtime tools such as:
+Override with:
 
-- `ak.wwise.core.object.get`
-- `ak.soundengine.postEvent`
-- `ak.wwise.core.soundbank.generate`
+```bash
+WWISE_WAAPI_URL=ws://host:port/waapi
+```
+
+## Access filtering
+
+Optional startup filters:
+
+- `WWISE_MCP_ALLOWED_DOMAINS=object,soundengine`
+- `WWISE_MCP_ALLOWED_RISKS=low,medium`
+- `WWISE_MCP_ALLOWED_PERMISSIONS=waapi:authoring:read,waapi:runtime`
 
 ## Package as EXE
 
@@ -102,51 +175,22 @@ If a local Wwise Authoring instance is running with WAAPI enabled, you can then 
 npm run package:exe
 ```
 
-This produces a Windows executable at `bin/wwise-mcp.exe`.
+Output file: `bin/wwise-mcp.exe`
 
-## Access filtering
+## Manual validation
 
-Optional environment variables can hide tools at startup:
+After startup, call tools in this order:
 
-- `WWISE_MCP_ALLOWED_DOMAINS=object,soundengine`
-- `WWISE_MCP_ALLOWED_RISKS=low,medium`
-- `WWISE_MCP_ALLOWED_PERMISSIONS=waapi:authoring:read,waapi:runtime`
+1. `catalog.listDomains`
+2. `catalog.listTools` with `{ "domain": "object", "includePlanned": true }`
+3. `catalog.getToolSchema` with `{ "toolName": "ak.wwise.core.object.get" }`
 
-## Add a new domain
+This is the intended progressive-disclosure path: domain summary -> tool summary -> schema details.
+
+## Extend with new domains
 
 1. Copy `src/domains/example/tools.ts` to a new domain folder.
-2. Export a `getYourDomainTools()` function that returns `ToolDefinition[]`.
-3. Register the domain metadata in `config/domains.json`.
-4. Import and register the new tools in `src/index.ts`.
-5. If the domain maps to WAAPI reference files, extend the domain mapping logic in `src/lib/referenceCatalog.ts` if needed.
-
-## Notes on WAAPI implementation status
-
-This repository now includes a live WAAPI client layer backed by `waapi-client`.
-
-- Discovery tools are fully implemented.
-- Surfaced WAAPI tools call the real WAAPI procedure with the same name.
-- If Wwise Authoring is not running or WAAPI is unreachable, tools fail with `waapi_unavailable` or `waapi_call_failed`.
-- Additional interfaces can be surfaced incrementally by adding metadata and schemas under the existing domain structure.
-
-The current implemented WAAPI surface is tracked in `docs/implemented-waapi.md`.
-
-## WAAPI connection
-
-By default the server connects to:
-
-```bash
-ws://127.0.0.1:8080/waapi
-```
-
-Override it with:
-
-```bash
-WWISE_WAAPI_URL=ws://host:port/waapi
-```
-
-## Implementation notes
-
-- The server uses a shared WAAPI session abstraction in `src/lib/waapiClient.ts`.
-- Surfaced tools call the identically named WAAPI RPC and wrap the raw result inside the standard MCP response envelope.
-- Tool-specific `options` can be passed as a top-level `options` field when the WAAPI procedure supports options.
+2. Export `getYourDomainTools()` returning `ToolDefinition[]`.
+3. Add domain metadata to `config/domains.json`.
+4. Import/register tools in `src/index.ts`.
+5. Extend `src/lib/referenceCatalog.ts` mapping when needed.
