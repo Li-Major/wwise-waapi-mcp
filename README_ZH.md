@@ -10,16 +10,19 @@
 
 ## 快速开始
 
-### 安装依赖。
+### 安装依赖
 
 ```bash
 npm i
 ```
 
-### 在 `config/runtime.json` 中配置 Wwise 安装根目录和 WAAPI 连接地址。
+### 配置 Wwise 安装目录和 WAAPI 连接地址
 
-   如果 `wwiseRoot` 配置留空，或路径无效，工具会尝试使用 `%WWISEROOT%` 查找路径。
-   若未指定 `waapiUrl`，则默认使用 `ws://127.0.0.1:8080/waapi`。
+在 `config/runtime.json` 中进行配置
+
+   如果 `wwiseRoot` 配置留空，或路径无效，工具会尝试使用 `%WWISEROOT%` 查找路径
+
+   若未指定 `waapiUrl`，则默认使用 `ws://127.0.0.1:8080/waapi`
 
 ```json
 // 示例
@@ -29,13 +32,13 @@ npm i
 }
 ```
 
-### 开发模式运行（默认 stdio）。
+### 开发模式运行（默认 stdio）
 
 ```bash
 npm run dev
 ```
 
-### 或者先构建再运行。
+### 或者先构建再运行
 
 ```bash
 npm run build
@@ -77,7 +80,7 @@ npm start
   - `catalog.listTools`
   - `catalog.getToolSchema`
   - `catalog.executeTool`
-- 覆盖主要领域的 WAAPI 运行时工具。
+- 覆盖主要 Domain 的 WAAPI 运行时工具。
 - 统一响应封装：
   - 成功：`{ ok: true, data: ... }`
   - 失败：`{ ok: false, error: { code, message, details? } }`
@@ -156,8 +159,8 @@ npm run verify
 验证脚本会检查：
 
 - MCP `tools/list` 是否只注册了发现工具
-- 是否可以通过 `catalog.listDomains` 枚举领域
-- 是否可以通过 `catalog.listTools` 发现领域下的工具
+- 是否可以通过 `catalog.listDomains` 枚举 Domain
+- 是否可以通过 `catalog.listTools` 发现 Domain 下的工具
 - 是否可以通过 `catalog.getToolSchema` 查询某个工具的 schema
 - 是否可以通过 `catalog.executeTool` 执行某个运行时工具
 - WAAPI 不可用时，运行时 WAAPI 调用是否仍会结构化失败
@@ -205,14 +208,14 @@ npm run package:exe
 3. `catalog.getToolSchema`，参数 `{ "toolName": "ak.wwise.core.object.get" }`
 4. `catalog.executeTool`，参数 `{ "toolName": "ak.wwise.core.object.get", "arguments": { ... } }`
 
-这是预期的渐进式发现路径：领域摘要 -> 工具摘要 -> schema 详情 -> 工具执行。
+这是预期的渐进式发现路径：Domain 摘要 -> 工具摘要 -> schema 详情 -> 工具执行。
 
-这意味着 MCP 客户端在调用 `tools/list` 时，不会再直接拿到全部 callable WAAPI 工具，而是先发现领域和工具，再按需请求某个工具的 schema，最后通过统一入口 `catalog.executeTool` 执行该工具。
+这意味着 MCP 客户端在调用 `tools/list` 时，不会再直接拿到全部 callable WAAPI 工具，而是先发现 Domain 和工具，再按需请求某个工具的 schema，最后通过统一入口 `catalog.executeTool` 执行该工具。
 
-## 扩展新领域
+## 扩展新 Domain
 
-1. 复制 `src/domains/example/tools.ts` 到新的领域目录。
+1. 复制 `src/domains/example/tools.ts` 到新的 Domain 目录。
 2. 导出 `getYourDomainTools()` 并返回 `ToolDefinition[]`。
-3. 在 `config/domains.json` 添加领域元数据。
-4. 在 `src/index.ts` 中导入并注册该领域工具。
-5. 如有需要，扩展 `src/lib/referenceCatalog.ts` 中的领域映射。
+3. 在 `config/domains.json` 添加 Domain 元数据。
+4. 在 `src/index.ts` 中导入并注册该 Domain 工具。
+5. 如有需要，扩展 `src/lib/referenceCatalog.ts` 中的 Domain 映射。
