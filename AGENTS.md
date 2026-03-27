@@ -121,3 +121,5 @@ Notes:
 - Prefer implementing one domain increment at a time.
 - If asked to add many WAAPI tools, add discovery metadata broadly but runtime-backed execution narrowly.
 - Verify that changes still support the progressive-disclosure design.
+- Keep terms in English even when writing documents in Chinese.
+- When done something, check if you need to update both README.md and README_ZH.md
