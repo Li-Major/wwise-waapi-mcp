@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.3] - 2026-03-29
+
+Fixed `session.getConfig` to accurately reflect the connection status, which may always be false.
+
 ## [1.0.2] - 2026-03-29
 
 Corrected the description of `session.getConfig` to reflect that it only returns the currently configured URL, not the connection status.

@@ -3,6 +3,15 @@ import { readFileSync, writeFileSync } from "fs";
 import { AppError } from "./errors.js";
 import { getConfigPath } from "./runtimePaths.js";
 
+type SessionLike = {
+  session?: {
+    isOpen?: boolean;
+  } | null;
+  connection?: {
+    onclose?: ((reason: string, details: unknown) => boolean | void) | null;
+  } | null;
+};
+
 /** 从 runtime.json 读取 WAAPI URL 配置 */
 function getWaapiUrl(): string {
   try {
@@ -34,7 +43,19 @@ export function setWaapiUrl(url: string): void {
 
 /** 返回当前 WAAPI 会话是否处于活跃状态。 */
 export function isSessionActive(): boolean {
-  return !!activeSession;
+  if (!activeSession) {
+    return false;
+  }
+
+  const sessionLike = activeSession as unknown as SessionLike;
+  const isOpen = sessionLike.session?.isOpen === true;
+
+  if (!isOpen) {
+    activeSession = undefined;
+    return false;
+  }
+
+  return true;
 }
 
 /** 应用内共享的单例 WAAPI 会话对象。 */
@@ -51,7 +72,20 @@ async function openSession(): Promise<Session> {
   const url = getWaapiUrl();
 
   try {
-    return await connect(url);
+    const session = await connect(url);
+    const sessionLike = session as unknown as SessionLike;
+
+    // Ensure stale cached session is cleared when the underlying socket closes.
+    if (sessionLike.connection) {
+      sessionLike.connection.onclose = () => {
+        if (activeSession === session) {
+          activeSession = undefined;
+        }
+        return true;
+      };
+    }
+
+    return session;
   } catch (error) {
     throw new AppError("waapi_unavailable", `Unable to connect to WAAPI at ${url}.`, {
       url,
@@ -65,7 +99,7 @@ async function openSession(): Promise<Session> {
  * 并发调用时共享同一个连接 Promise，避免重复连接。
  */
 export async function getWaapiSession(): Promise<Session> {
-  if (activeSession) {
+  if (isSessionActive() && activeSession) {
     return activeSession;
   }
 
@@ -94,7 +128,9 @@ export async function callWaapi(uri: string, args: unknown, options?: unknown): 
   try {
     return await session.call(uri, args ?? {}, options ?? {});
   } catch (error) {
-    activeSession = undefined;
+    if (!isSessionActive()) {
+      activeSession = undefined;
+    }
     throw new AppError("waapi_call_failed", `WAAPI call failed for ${uri}.`, {
       uri,
       cause: error instanceof Error ? error.message : error

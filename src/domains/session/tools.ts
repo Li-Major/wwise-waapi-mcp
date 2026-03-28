@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import { readFileSync } from "fs";
 import { ok, standardResponseJsonSchema } from "../../lib/response.js";
-import { setWaapiUrl, disconnectWaapi, isSessionActive } from "../../lib/waapiClient.js";
+import { setWaapiUrl, disconnectWaapi, getWaapiSession, isSessionActive } from "../../lib/waapiClient.js";
 import { getConfigPath } from "../../lib/runtimePaths.js";
 import { toFailureResponse } from "../../lib/errors.js";
 import type { ToolDefinition } from "../../registry/types.js";
@@ -112,6 +112,12 @@ export function getSessionTools(): ToolDefinition[] {
       isDiscoveryTool: true,
       outputSchemaJson: standardResponseJsonSchema,
       handler: async () => {
+        try {
+          await getWaapiSession();
+        } catch {
+          // Connection probing is best-effort; isConnected below will remain false.
+        }
+
         return ok({
           url: getCurrentWaapiUrl(),
           isConnected: isSessionActive()
