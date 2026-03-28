@@ -71,6 +71,8 @@ If all probes fail, startup exits with `waapi_schema_not_found`.
 - Progressive-disclosure MCP surface:
   - `tools/list` only exposes discovery tools, not every runtime WAAPI tool
   - currently exposed discovery tools:
+    - `session.configure`
+    - `session.getConfig`
     - `catalog.listDomains`
     - `catalog.listTools`
     - `catalog.getToolSchema`
@@ -180,6 +182,23 @@ Configure in `config/runtime.json`:
   "waapiUrl": "ws://host:port/waapi"
 }
 ```
+
+### Connecting to a specific Wwise instance
+
+Each Wwise instance exposes WAAPI on a configurable port (default 8080).
+If multiple Wwise instances are running on the same machine, each must use a different port — Wwise will refuse to start its WAAPI server if the chosen port is already in use.
+
+Use the `session.configure` tool at runtime to switch the target port without restarting the server:
+
+```jsonc
+// Switch to a Wwise instance running on port 8081
+{ "port": 8081 }
+```
+
+The change is persisted to `runtime.json` and the current WAAPI session is disconnected.
+The next WAAPI call automatically reconnects to the new port.
+
+Use `session.getConfig` to check the currently configured URL and connection status.
 
 ## Access filtering
 

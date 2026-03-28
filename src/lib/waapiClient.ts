@@ -1,5 +1,5 @@
 import { connect, type Session } from "waapi-client";
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { AppError } from "./errors.js";
 import { getConfigPath } from "./runtimePaths.js";
 
@@ -13,6 +13,28 @@ function getWaapiUrl(): string {
     // 如果读取配置失败，使用默认值
     return "ws://127.0.0.1:8080/waapi";
   }
+}
+
+/**
+ * 将新的 WAAPI URL 写入 runtime.json，并不会立即重连。
+ * 调用方应在此之后调用 disconnectWaapi()，下次工具调用时将自动以新 URL 重连。
+ */
+export function setWaapiUrl(url: string): void {
+  try {
+    const configPath = getConfigPath("runtime.json");
+    const config = JSON.parse(readFileSync(configPath, "utf-8")) as Record<string, unknown>;
+    config.waapiUrl = url;
+    writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
+  } catch (error) {
+    throw new AppError("config_write_failed", "Failed to update waapiUrl in runtime.json.", {
+      cause: error instanceof Error ? error.message : error
+    });
+  }
+}
+
+/** 返回当前 WAAPI 会话是否处于活跃状态。 */
+export function isSessionActive(): boolean {
+  return !!activeSession;
 }
 
 /** 应用内共享的单例 WAAPI 会话对象。 */

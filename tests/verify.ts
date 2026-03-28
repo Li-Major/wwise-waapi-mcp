@@ -65,11 +65,13 @@ async function main(): Promise<void> {
   console.log("\n=== Progressive Disclosure Verification ===");
   console.log(`Step 1: MCP tools/list includes ${toolNames.length} discovery tools:`, toolNames);
 
-  assert.equal(toolNames.length, 4, "Should have exactly 4 discovery tools");
+  assert.equal(toolNames.length, 6, "Should have exactly 6 discovery tools");
   assert(toolNames.includes("catalog.listDomains"));
   assert(toolNames.includes("catalog.listTools"));
   assert(toolNames.includes("catalog.getToolSchema"));
   assert(toolNames.includes("catalog.executeTool"));
+  assert(toolNames.includes("session.configure"));
+  assert(toolNames.includes("session.getConfig"));
 
   // Step 2: List all domains
   console.log("\nStep 2: Call catalog.listDomains");

@@ -71,6 +71,8 @@ npm start
 - 渐进式对外暴露：
   - MCP 的 `tools/list` 只暴露发现工具，不会一次性暴露所有运行时 WAAPI 工具
   - 当前对外暴露的发现工具为：
+    - `session.configure`
+    - `session.getConfig`
     - `catalog.listDomains`
     - `catalog.listTools`
     - `catalog.getToolSchema`
@@ -180,6 +182,23 @@ ws://127.0.0.1:8080/waapi
   "waapiUrl": "ws://host:port/waapi"
 }
 ```
+
+### 连接到指定的 Wwise 实例
+
+每个 Wwise 实例都有独立可配置的 WAAPI 端口（默认 8080）。  
+同一台机器上如果同时运行多个 Wwise 实例，每个实例必须使用不同的端口——若端口已被占用，后启动的实例将无法初始化其 WAAPI 服务器。
+
+在运行时可通过 `session.configure` 工具切换目标端口，无需重启 MCP 服务器：
+
+```jsonc
+// 切换到运行在 8081 端口的 Wwise 实例
+{ "port": 8081 }
+```
+
+该变更会持久化到 `runtime.json`，同时断开当前 WAAPI 会话。  
+下一次 WAAPI 工具调用时将自动以新端口重新建立连接。
+
+使用 `session.getConfig` 可查看当前配置的连接地址及会话状态。
 
 ## 访问过滤
 

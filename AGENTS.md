@@ -14,7 +14,7 @@ Use this guide when modifying code, adding domains, or wiring new WAAPI tools.
 
 ## Current status
 
-- `stdio` MCP transport is implemented.
+- Both `stdio`, `HTTP` and `SSE` MCP transport are implemented.
 - Discovery tools are implemented in `src/domains/catalog/tools.ts`.
 - A shared live WAAPI client abstraction is implemented in `src/lib/waapiClient.ts` using `waapi-client`.
 - Surfaced WAAPI tools are routed to real WAAPI RPC calls and return structured WAAPI failures when Wwise Authoring is unavailable.
@@ -62,7 +62,6 @@ Use this guide when modifying code, adding domains, or wiring new WAAPI tools.
    - create `src/domains/<domain>/tools.ts`
    - import and register the domain in `src/index.ts`
    - update `src/lib/referenceCatalog.ts` if WAAPI filename mapping needs to recognize the new prefix
-5. If a tool becomes truly implemented, update `docs/implemented-waapi.md`.
 
 ## Progressive disclosure rules
 

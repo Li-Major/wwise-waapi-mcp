@@ -125,6 +125,13 @@
       "description": "Sound object authoring operations such as active audio source selection.",
       "risk": "high",
       "tags": ["authoring", "sound", "source"]
+    },
+    {
+      "name": "session",
+      "title": "Session",
+      "description": "WAAPI connection configuration. Controls which Wwise instance the server connects to by setting the WAAPI port.",
+      "risk": "low",
+      "tags": ["session", "connection", "config"]
     }
   ]
 }

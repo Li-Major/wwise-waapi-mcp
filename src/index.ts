@@ -24,6 +24,7 @@ import { getLogTools } from "./domains/log/tools.js";
 import { getPluginTools } from "./domains/plugin/tools.js";
 import { getSourceControlTools } from "./domains/sourceControl/tools.js";
 import { getSoundTools } from "./domains/sound/tools.js";
+import { getSessionTools } from "./domains/session/tools.js";
 
 type DomainsConfig = {
   domains: DomainMeta[];
@@ -74,6 +75,7 @@ export async function main(): Promise<void> {
   registry.registerTools(getPluginTools());
   registry.registerTools(getSourceControlTools());
   registry.registerTools(getSoundTools());
+  registry.registerTools(getSessionTools());
   registry.registerTools(getCatalogTools(registry));
 
   const policy = ToolRegistry.policyFromEnv(process.env);
