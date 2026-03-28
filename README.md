@@ -198,7 +198,7 @@ Use the `session.configure` tool at runtime to switch the target port without re
 The change is persisted to `runtime.json` and the current WAAPI session is disconnected.
 The next WAAPI call automatically reconnects to the new port.
 
-Use `session.getConfig` to check the currently configured URL and connection status.
+Use `session.getConfig` to check the currently configured URL.
 
 ## Access filtering
 

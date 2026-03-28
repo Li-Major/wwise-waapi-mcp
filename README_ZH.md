@@ -198,7 +198,7 @@ ws://127.0.0.1:8080/waapi
 该变更会持久化到 `runtime.json`，同时断开当前 WAAPI 会话。  
 下一次 WAAPI 工具调用时将自动以新端口重新建立连接。
 
-使用 `session.getConfig` 可查看当前配置的连接地址及会话状态。
+使用 `session.getConfig` 可查看当前配置的连接地址。
 
 ## 访问过滤
 
